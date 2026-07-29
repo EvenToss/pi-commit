@@ -4,6 +4,15 @@
   "private": true,
   "type": "module",
   "main": "dist/index.js",
+  "keywords": [
+    "pi-package"
+  ],
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ],
+    "skills": []
+  },
   "scripts": {
     "build": "tsc"
   },
