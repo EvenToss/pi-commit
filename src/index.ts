@@ -57,13 +57,12 @@ export default function (pi: ExtensionAPI): void {
       modelToRestore = previousModel;
       pi.sendUserMessage(
         [
-          "请立即调用 smart_commit 工具：",
+          "立即调用 smart_commit 工具，完成工作区提交并推送：",
           JSON.stringify({
             model: `${model.provider}/${model.id}`,
             auto_push: true,
           }),
-          "",
-          "使用 commit-style-guide Skill，完成工具要求的提交操作，并用中文报告结果。",
+          "工具已提供状态和差异；按其精简规则执行，不要重复读取差异。完成后用中文简要报告。",
         ].join("\n"),
       );
     },

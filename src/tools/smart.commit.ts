@@ -126,24 +126,22 @@ export function registerSmartCommitTool(pi: ExtensionAPI): void {
         }
 
         const pushInstruction = autoPush
-          ? "所有分组提交成功后，只执行一次 `git push`，并报告推送错误。"
-          : "除非用户明确要求，否则不要推送。";
+          ? "完成提交后执行一次 `git push`。"
+          : "不要执行 git push。";
         const instruction = [
-          `本次使用的模型是 ${model.provider}/${model.id}。`,
-          "请分析整个 Git 工作区，而不只是暂存区，并按功能或独立目的将改动拆分成尽可能清晰的提交。",
-          "先使用 `git status --short` 和下面的 `git diff HEAD` 了解已修改、已暂存和未跟踪的文件；未跟踪文件需要自行读取内容并纳入对应功能分组。",
-          "每个功能分组只包含完成该功能所需的相关文件。不要把互不相关的功能合并到一个提交，也不要为了拆分而拆开同一功能的必要改动。",
-          "对每个分组依次执行 `git add <相关文件>`，然后立即执行 `git commit`。可以使用 git add 的文件路径形式进行文件级分组，但不要使用 `git add .` 或 `git add -A` 一次性提交所有改动。",
-          "保留用户已有的暂存内容，不要执行 `git reset`、`git restore`、`git checkout` 或其他丢弃改动的操作；如果某个文件同时包含多个功能，必须谨慎判断是否能安全地使用交互式暂存，否则保留在同一提交中并说明原因。",
-          "每条提交信息都遵循 commit-style-guide：保留 feat、fix 等英文类型前缀，scope 可选，冒号后的标题主体必须使用中文并简洁明确。较大的改动用中文正文说明原因和实现方式。",
+          `使用模型 ${model.provider}/${model.id}。`,
+          "根据下面已经提供的状态和差异，直接完成提交，不要再次执行 git status 或 git diff。",
+          "默认创建一个提交；只有存在明确独立、且能按文件安全拆分的功能时才拆分多个提交。不要为了拆分而增加分析或交互式暂存。",
+          "提交信息遵循 commit-style-guide：使用 feat/fix/refactor/docs/style/test/chore 前缀，scope 可选，冒号后用简洁中文动词标题（建议不超过 50 个字符），较大改动再添加中文正文。",
+          "执行规则：保留已有暂存内容，不得 reset/restore/checkout 丢弃改动；未跟踪文件按状态列表纳入提交；优先用一次 `git add` 和一次 `git commit` 完成。",
           pushInstruction,
-          "全部操作完成后，返回每个提交的提交哈希、提交信息、包含的文件，以及推送结果。遇到某个分组失败时停止后续提交并报告原因。",
+          "尽量只调用一次 bash 完成 add、commit 和 push，不要读取已经提供的差异。最后用中文简要报告提交哈希、提交信息、文件和推送结果。失败立即停止并说明原因。",
           "",
           "工作区状态：",
           status.stdout,
           "",
-          "当前差异（包含已暂存和未暂存的已跟踪文件）：",
-          diff.stdout || "（没有已跟踪文件差异，可能只有未跟踪文件；请根据 status 读取它们。）",
+          "差异：",
+          diff.stdout || "（没有已跟踪文件差异，可能只有未跟踪文件；仅在必要时读取状态中列出的未跟踪文件。）",
         ].join("\n");
 
         return {
