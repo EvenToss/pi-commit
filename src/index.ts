@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import {
   getCommitModel,
   findModel,
@@ -7,6 +7,24 @@ import {
 } from "./tools/smart.commit.js";
 
 export default function (pi: ExtensionAPI): void {
+  let modelToRestore: NonNullable<ExtensionContext["model"]> | undefined;
+
+  pi.on("agent_settled", async (_event, ctx) => {
+    const previousModel = modelToRestore;
+    modelToRestore = undefined;
+    if (!previousModel) return;
+
+    const restored = await pi.setModel(previousModel);
+    if (restored) {
+      ctx.ui.notify(`已恢复原模型：${previousModel.provider}/${previousModel.id}`, "info");
+    } else {
+      ctx.ui.notify(
+        `原模型无法恢复：${previousModel.provider}/${previousModel.id}。请检查该模型的认证配置。`,
+        "warning",
+      );
+    }
+  });
+
   registerSmartCommitTool(pi);
 
   pi.on("resources_discover", () => ({
@@ -26,6 +44,7 @@ export default function (pi: ExtensionAPI): void {
         return;
       }
 
+      const previousModel = ctx.model;
       const selected = await pi.setModel(model);
       if (!selected) {
         ctx.ui.notify(
@@ -35,6 +54,7 @@ export default function (pi: ExtensionAPI): void {
         return;
       }
 
+      modelToRestore = previousModel;
       pi.sendUserMessage(
         [
           "请立即调用 smart_commit 工具：",

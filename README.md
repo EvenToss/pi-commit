@@ -80,7 +80,7 @@ pi -e https://github.com/EvenToss/pi-commit.git
 /commit provider/model-id
 ```
 
-当前命令默认在所有提交完成后执行一次 `git push`。
+当前命令默认在所有提交完成后执行一次 `git push`。`/commit` 使用 `commit_model` 临时处理任务，任务结束后会自动恢复执行命令前选中的模型。
 
 ## 安装
 
