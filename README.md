@@ -52,17 +52,23 @@ pi --model doumi/gpt-5.4-mini
 
 也可以在目标项目中使用 `.pi/settings.json` 配置项目专用模型。项目配置优先于全局配置。模型选择优先级为：`/commit` 后的模型参数、项目 `commit_model`、全局 `commit_model`、扩展内置默认值。
 
+## 临时测试
 
-
-在目标 Git 项目目录执行：
+在目标 Git 项目目录启动 pi，并临时加载本地扩展源码：
 
 ```bash
-pi -e /Users/even/Downloads/Code/pi-agent/pi-commit/src/index.ts
+pi -e /path/to/pi-commit/src/index.ts
 ```
 
-然后直接执行：
+也可以直接临时加载 GitHub 仓库：
 
 ```bash
+pi -e https://github.com/EvenToss/pi-commit.git
+```
+
+然后执行：
+
+```text
 /commit
 ```
 
@@ -70,38 +76,36 @@ pi -e /Users/even/Downloads/Code/pi-agent/pi-commit/src/index.ts
 
 也可以指定模型：
 
-```bash
+```text
 /commit provider/model-id
 ```
 
-当前命令默认在提交后执行 `git push`。
+当前命令默认在所有提交完成后执行一次 `git push`。
 
-## 全局安装测试
+## 安装
 
-将扩展目录放到 pi 的全局扩展目录：
-
-```bash
-mkdir -p ~/.pi/agent/extensions
-cp -R /Users/even/Downloads/Code/pi-agent/pi-commit ~/.pi/agent/extensions/
-```
-
-pi 会自动发现目录中的 `index.ts`。本项目根目录已经提供了入口文件，它会加载 `src/index.ts`。
+从 GitHub HTTPS 地址安装：
 
 ```bash
-npm install --prefix /Users/even/Downloads/Code/pi-agent/pi-commit
-npm run build --prefix /Users/even/Downloads/Code/pi-agent/pi-commit
+pi install https://github.com/EvenToss/pi-commit.git
 ```
 
-然后将目录复制到全局扩展目录，并在 pi 中执行：
+安装完成后重启 pi，或在运行中的 pi 中执行：
 
 ```text
 /reload
 ```
 
-如果扩展使用目录自动发现，入口文件就是项目根目录的 `index.ts`。临时测试时也可以直接使用 `src/index.ts`。
-
-## 检查构建
+检查已安装的包：
 
 ```bash
-npm run build --prefix /Users/even/Downloads/Code/pi-agent/pi-commit
+pi list
 ```
+
+更新这个扩展：
+
+```bash
+pi update https://github.com/EvenToss/pi-commit.git
+```
+
+
