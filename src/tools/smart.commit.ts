@@ -130,12 +130,13 @@ export function registerSmartCommitTool(pi: ExtensionAPI): void {
           : "不要执行 git push。";
         const instruction = [
           `使用模型 ${model.provider}/${model.id}。`,
-          "根据下面已经提供的状态和差异，直接完成提交，不要再次执行 git status 或 git diff。",
-          "默认创建一个提交；只有存在明确独立、且能按文件安全拆分的功能时才拆分多个提交。不要为了拆分而增加分析或交互式暂存。",
+          "根据下面已经提供的状态和差异，按功能或独立目的拆分提交，不要再次执行 git status 或 git diff。",
+          "先判断每个文件属于哪个功能分组；不同功能必须拆分，只有同一功能的必要改动才合并。若同一文件混有多个功能且无法安全按行暂存，则保留在同一提交并说明原因。",
+          "每个分组只包含完成该功能所需的文件，依次执行 `git add <分组文件>` 和 `git commit --only <分组文件>`；使用 `--only` 避免把用户预先暂存的其他功能带入当前提交。不要使用交互式暂存，也不要为了拆分增加无意义的提交。",,
           "提交信息遵循 commit-style-guide：使用 feat/fix/refactor/docs/style/test/chore 前缀，scope 可选，冒号后用简洁中文动词标题（建议不超过 50 个字符），较大改动再添加中文正文。",
-          "执行规则：保留已有暂存内容，不得 reset/restore/checkout 丢弃改动；未跟踪文件按状态列表纳入提交；优先用一次 `git add` 和一次 `git commit` 完成。",
+          "执行规则：保留已有暂存内容，不得 reset/restore/checkout 丢弃改动；未跟踪文件按状态列表纳入对应分组。",
           pushInstruction,
-          "尽量只调用一次 bash 完成 add、commit 和 push，不要读取已经提供的差异。最后用中文简要报告提交哈希、提交信息、文件和推送结果。失败立即停止并说明原因。",
+          "尽量只调用一次 bash 完成每个分组的 add/commit，全部提交成功后再 push 一次；不要读取已经提供的差异。最后用中文简要报告各提交哈希、提交信息、文件和推送结果。某个分组失败时停止后续操作并说明原因。",
           "",
           "工作区状态：",
           status.stdout,

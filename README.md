@@ -72,7 +72,7 @@ pi -e https://github.com/EvenToss/pi-commit.git
 /commit
 ```
 
-不需要预先执行 `git add`。扩展会先读取一次 Git 状态和差异，默认创建一个规范提交；只有明确存在独立功能时才拆分提交，然后按配置执行 `git push`。执行提示会复用已读取的差异，避免模型重复运行 `git status`、`git diff` 和逐文件分析。
+不需要预先执行 `git add`。扩展会先读取一次 Git 状态和差异，按功能或独立目的拆分提交；只有无法安全区分时才合并。然后按配置执行 `git push`。执行提示会复用已读取的差异，避免模型重复运行 `git status`、`git diff` 和逐文件分析。
 
 也可以指定模型：
 
